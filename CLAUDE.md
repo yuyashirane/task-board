@@ -6,10 +6,34 @@
 Claude Code を使った開発フローを身につけることを主目的とする、タスクボード（Kanban風）の習作。
 
 - **位置づけ**: 学習用（本番運用を想定しない）
-- **技術スタック**: 教材の指示に従って都度決定（事前固定しない）
-- **データ保存**: 教材の指示に従う
+- **技術スタック**: React + Vite（詳細は「技術スタック」セクション参照）
+- **データ保存**: ブラウザの localStorage
 
-教材で技術選択が確定したタイミングで、本ファイルの「技術スタック」欄を更新すること。
+## デプロイ先
+
+公開URL: **https://yuyashirane.github.io/task-board/**
+
+- ホスティング: GitHub Pages
+- デプロイ方式: GitHub Actions（`.github/workflows/deploy.yml`）
+- トリガー: `main` ブランチへの push で自動実行
+- ベースパス: `/task-board/`（リポジトリ名に合わせて `vite.config.js` の `base` で指定）
+
+## 技術スタック
+
+| 区分 | 採用技術 | バージョン |
+| --- | --- | --- |
+| UI フレームワーク | React | 18.3 |
+| ビルドツール | Vite | 5.4 |
+| 言語 | JavaScript (JSX) | — |
+| スタイル | プレーン CSS | — |
+| 状態管理 | React 標準フック（`useState` / `useEffect`） | — |
+| 永続化 | ブラウザ `localStorage` | — |
+| CI / デプロイ | GitHub Actions + GitHub Pages | — |
+| パッケージ管理 | npm | — |
+
+採用しない（学習スコープ外）: TypeScript / CSS Modules・Tailwind 等のスタイル抽象化 / Redux 等の状態管理ライブラリ / ルーティングライブラリ / テストランナー。
+
+必要になったタイミングで段階的に導入する方針。導入時は本セクションを更新すること。
 
 ## ディレクトリ構成（グローバル標準に準拠）
 
@@ -28,6 +52,46 @@ task-board/
 ```
 
 迷ったら：手順 → `.claude/skills/` / 知識 → `references/` / 実装 → `src/`
+
+## 命名規約
+
+### ファイル名
+
+| 種類 | 規則 | 例 |
+| --- | --- | --- |
+| React コンポーネント | **PascalCase + `.jsx`** | `App.jsx`, `TaskList.jsx` |
+| コンポーネント専用CSS | コンポーネントと**同名**で `.css` | `App.css`（`App.jsx` 用） |
+| エントリポイント | 小文字 | `main.jsx` |
+| グローバルCSS | 小文字 | `index.css` |
+
+- 1ファイル = 1コンポーネントを基本とする
+- コンポーネントとそのスタイルは**同名ペア**で並べる（`App.jsx` ⇔ `App.css`）
+
+### コード内の識別子
+
+| 対象 | 規則 | 例 |
+| --- | --- | --- |
+| React コンポーネント | PascalCase（ファイル名と一致） | `function App()` |
+| 変数・関数 | camelCase | `tasks`, `loadTasks` |
+| イベントハンドラ | **動詞 + 名詞**の camelCase | `addTask`, `toggleTask`, `deleteTask` |
+| state セッター | `set` + state名 | `setTasks`, `setInput` |
+| 定数（モジュールスコープ） | UPPER_SNAKE_CASE | `STORAGE_KEY` |
+
+### localStorage キー
+
+- 形式: `'task-board:<用途>'`（プロジェクト名 + コロン + 用途）
+- 例: `'task-board:tasks'`
+- 他アプリと衝突しないよう必ずプレフィックスを付ける
+
+### CSS クラス名
+
+| 規則 | 例 |
+| --- | --- |
+| **kebab-case** | `.task-form`, `.task-item`, `.delete-btn` |
+| 状態の修飾は別クラスで重ね掛け | `.task-item.done`（完了状態） |
+| ボタンは用途を表す suffix `-btn` | `.delete-btn` |
+
+クラス名は HTML 構造ではなく**役割**を表す名前にする（例: `.red-text` ではなく `.task-text` + `.done`）。
 
 ## 設計原則
 
